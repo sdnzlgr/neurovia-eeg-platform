@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurovia | EEG Analiz Platformu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <div class="topbar-left">
+                <span id="topbar-text-1">EEG Analiz Platformu</span>
+                <span class="dot">•</span>
+                <span id="topbar-text-2">Profesyonel raporlama altyapısı</span>
+            </div>
+
+            <div class="topbar-right">
+                <div class="lang-switch">
+                    <button type="button" id="lang-tr" class="lang-btn active" onclick="setLang('tr')">TR</button>
+                    <span>/</span>
+                    <button type="button" id="lang-en" class="lang-btn" onclick="setLang('en')">EN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="Neurovia Logo" class="brand-logo" onerror="this.style.display='none'; document.getElementById('brandFallback').style.display='block';">
+                <div id="brandFallback" class="brand-fallback" style="display:none;">Neurovia</div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="#analysis" id="nav-analysis">Analiz</a>
+                <a href="#workflow" id="nav-workflow">Süreç</a>
+                <a href="#plans" id="nav-plans">Paketler</a>
+                <a href="#contact" id="nav-contact">İletişim</a>
+            </nav>
+
+            <div class="header-actions">
+                <a href="#analysis" class="header-action-link" id="header-action">Analizi Başlat</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="hero-editorial">
+            <div class="hero-image-layer"></div>
+            <div class="hero-dark-overlay"></div>
+
+            <div class="container hero-editorial-inner">
+                <div class="hero-editorial-content">
+                    <div class="hero-kicker" id="hero-kicker">Neurovia</div>
+
+                    <h1 id="hero-title">
+                        EEG verilerini analiz edin, yorumlayın ve yapılandırılmış rapor çıktıları oluşturun.
+                    </h1>
+
+                    <p id="hero-text">
+                        Neurovia, EEG dosyalarının işlenmesi ve profesyonel raporlama süreçlerinin daha düzenli, daha okunabilir ve daha güvenilir şekilde yürütülmesi için tasarlanmıştır.
+                    </p>
+
+                    <a href="#analysis" class="hero-main-button" id="hero-button">EEG Analizini Başlat</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="analysis-panel-section" id="analysis">
+            <div class="container">
+                <div class="section-heading editor-style">
+                    <span class="section-label" id="analysis-label">Analiz</span>
+                    <h2 id="analysis-title">EEG dosyası yükleme alanı</h2>
+                    <p id="analysis-text">
+                        Desteklenen formatlardan birini seçin ve otomatik analiz sürecini başlatın.
+                    </p>
+                </div>
+
+                <div class="analysis-panel-layout">
+                    <div class="analysis-upload-box">
+                        {% if error_message %}
+                            <div class="error-message">{{ error_message }}</div>
+                        {% endif %}
+
+                        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                            <input type="hidden" name="lang" id="langInput" value="tr">
+
+                            <div class="upload-zone-editorial">
+                                <input type="file" id="file" name="file" accept=".edf,.csv,.mat" required onchange="updateFileName()">
+                                <label for="file" class="file-select-button" id="upload-label">EEG Dosyası Seç</label>
+                                <div class="file-name" id="file-name">Dosya seçilmedi</div>
+                                <div class="file-types" id="file-types-text">Desteklenen formatlar: .edf, .csv, .mat</div>
+                            </div>
+
+                            <button type="submit" class="primary-button full-width" id="analyzeButton">
+                                Yükle ve Analiz Et
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="analysis-side-box">
+                        <div class="side-info-block">
+                            <span class="side-info-label" id="side-label-1">İş Akışı</span>
+                            <strong id="side-value-1">Dosya yükleme → analiz → raporlama</strong>
+                        </div>
+
+                        <div class="side-info-block">
+                            <span class="side-info-label" id="side-label-2">Çıktı Türü</span>
+                            <strong id="side-value-2">Türkçe ve İngilizce PDF EEG raporu</strong>
+                        </div>
+
+                        <div class="side-info-block">
+                            <span class="side-info-label" id="side-label-3">Kullanım Yapısı</span>
+                            <strong id="side-value-3">Standart raporlar ve ölçeklenebilir analiz planları</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="workflow-section" id="workflow">
+            <div class="container">
+                <div class="section-heading editor-style">
+                    <span class="section-label" id="workflow-label">Süreç</span>
+                    <h2 id="workflow-title">Platform nasıl çalışır?</h2>
+                    <p id="workflow-text">
+                        Neurovia, EEG verisini sade bir akış içinde alır, işler ve düzenli rapor çıktısına dönüştürür.
+                    </p>
+                </div>
+
+                <div class="workflow-grid">
+                    <div class="workflow-card">
+                        <div class="workflow-number">01</div>
+                        <h3 id="workflow-card-1-title">Dosya yükleme</h3>
+                        <p id="workflow-card-1-text">EDF, CSV veya MAT formatındaki EEG dosyanızı sisteme yüklersiniz.</p>
+                    </div>
+
+                    <div class="workflow-card">
+                        <div class="workflow-number">02</div>
+                        <h3 id="workflow-card-2-title">Analiz süreci</h3>
+                        <p id="workflow-card-2-text">Veriler işlenir, temel ve ileri düzey metrikler otomatik olarak hesaplanır.</p>
+                    </div>
+
+                    <div class="workflow-card">
+                        <div class="workflow-number">03</div>
+                        <h3 id="workflow-card-3-title">Rapor oluşturma</h3>
+                        <p id="workflow-card-3-text">Sonuçlar Türkçe ve İngilizce indirilebilir PDF raporlar halinde sunulur.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="plans-editorial-section" id="plans">
+            <div class="container">
+                <div class="section-heading editor-style">
+                    <span class="section-label" id="plans-label">Paketler</span>
+                    <h2 id="plans-title">Rapor ve kullanım seçenekleri</h2>
+                    <p id="plans-text">
+                        Rapor kapsamına ve aylık analiz ihtiyacına göre farklı kullanım seçenekleri sunulabilir.
+                    </p>
+                </div>
+
+                <div class="plans-editorial-grid">
+                    <article class="plan-editorial-card">
+                        <div class="plan-editorial-tag" id="plan-tag-1">7–10 sayfa</div>
+                        <h3 id="plan-title-1">Standart Rapor</h3>
+                        <p id="plan-text-1">Temel EEG metrikleri ve özet değerlendirme içeren daha kompakt rapor yapısı.</p>
+                    </article>
+
+                    <article class="plan-editorial-card featured">
+                        <div class="plan-editorial-tag" id="plan-tag-2">20–25 sayfa</div>
+                        <h3 id="plan-title-2">İleri Seviye Rapor</h3>
+                        <p id="plan-text-2">Daha ayrıntılı yorumlama ve genişletilmiş analiz alanları içeren kapsamlı rapor yapısı.</p>
+                    </article>
+
+                    <article class="plan-editorial-card">
+                        <div class="plan-editorial-tag" id="plan-tag-3">Aylık plan</div>
+                        <h3 id="plan-title-3">Analiz Planları</h3>
+                        <p id="plan-text-3">20 analiz, 50 analiz ve sınırsız analiz gibi farklı aylık kullanım seçenekleri.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-editorial-section" id="contact">
+            <div class="container">
+                <div class="section-heading editor-style">
+                    <span class="section-label" id="contact-label">İletişim</span>
+                    <h2 id="contact-title">İletişim ve geri bildirim</h2>
+                    <p id="contact-text">
+                        Sorularınız, önerileriniz ve kullanım talepleriniz için bizimle iletişime geçebilirsiniz.
+                    </p>
+                </div>
+
+                <div class="contact-editorial-grid">
+                    <div class="contact-editorial-card">
+                        <h3 id="contact-card-title-1">İletişim Bilgileri</h3>
+                        <p id="contact-email">E-posta: info@neurovia.com</p>
+                        <p id="contact-support">Destek: support@neurovia.com</p>
+                        <p id="contact-location">Konum: Kayseri, Türkiye</p>
+                    </div>
+
+                    <div class="contact-editorial-card">
+                        <h3 id="contact-card-title-2">Öneri ve Yorum</h3>
+                        <textarea id="feedback-box" placeholder="Görüşünüzü veya önerinizi yazın"></textarea>
+                        <button type="button" class="primary-button full-width" id="feedback-btn">Gönder</button>
+                    </div>
+
+                    <div class="contact-editorial-card">
+                        <h3 id="contact-card-title-3">Sosyal Medya</h3>
+                        <div class="social-clean-list">
+                            <a href="#">Instagram</a>
+                            <a href="#">LinkedIn</a>
+                            <a href="#">X / Twitter</a>
+                            <a href="#">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer-editorial">
+        <div class="container footer-editorial-inner">
+            <span id="footer-brand">© 2026 Neurovia</span>
+            <span id="footer-text">EEG Analiz ve Raporlama Platformu</span>
+        </div>
+    </footer>
+
+    <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+        <div class="loading-card">
+            <div class="loader-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h3 id="loading-title">Veriler analiz ediliyor</h3>
+            <p id="loading-text">Lütfen bekleyin. EEG veriniz işleniyor ve rapor oluşturuluyor.</p>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            tr: {
+                "page-title": "Neurovia | EEG Analiz Platformu",
+                "topbar-text-1": "EEG Analiz Platformu",
+                "topbar-text-2": "Profesyonel raporlama altyapısı",
+                "nav-analysis": "Analiz",
+                "nav-workflow": "Süreç",
+                "nav-plans": "Paketler",
+                "nav-contact": "İletişim",
+                "header-action": "Analizi Başlat",
+
+                "hero-kicker": "Neurovia",
+                "hero-title": "EEG verilerini analiz edin, yorumlayın ve yapılandırılmış rapor çıktıları oluşturun.",
+                "hero-text": "Neurovia, EEG dosyalarının işlenmesi ve profesyonel raporlama süreçlerinin daha düzenli, daha okunabilir ve daha güvenilir şekilde yürütülmesi için tasarlanmıştır.",
+                "hero-button": "EEG Analizini Başlat",
+
+                "analysis-label": "Analiz",
+                "analysis-title": "EEG dosyası yükleme alanı",
+                "analysis-text": "Desteklenen formatlardan birini seçin ve otomatik analiz sürecini başlatın.",
+                "upload-label": "EEG Dosyası Seç",
+                "file-default": "Dosya seçilmedi",
+                "file-types-text": "Desteklenen formatlar: .edf, .csv, .mat",
+                "analyzeButton": "Yükle ve Analiz Et",
+                "analyzing-button": "Analiz ediliyor...",
+
+                "side-label-1": "İş Akışı",
+                "side-value-1": "Dosya yükleme → analiz → raporlama",
+                "side-label-2": "Çıktı Türü",
+                "side-value-2": "Türkçe ve İngilizce PDF EEG raporu",
+                "side-label-3": "Kullanım Yapısı",
+                "side-value-3": "Standart raporlar ve ölçeklenebilir analiz planları",
+
+                "workflow-label": "Süreç",
+                "workflow-title": "Platform nasıl çalışır?",
+                "workflow-text": "Neurovia, EEG verisini sade bir akış içinde alır, işler ve düzenli rapor çıktısına dönüştürür.",
+                "workflow-card-1-title": "Dosya yükleme",
+                "workflow-card-1-text": "EDF, CSV veya MAT formatındaki EEG dosyanızı sisteme yüklersiniz.",
+                "workflow-card-2-title": "Analiz süreci",
+                "workflow-card-2-text": "Veriler işlenir, temel ve ileri düzey metrikler otomatik olarak hesaplanır.",
+                "workflow-card-3-title": "Rapor oluşturma",
+                "workflow-card-3-text": "Sonuçlar Türkçe ve İngilizce indirilebilir PDF raporlar halinde sunulur.",
+
+                "plans-label": "Paketler",
+                "plans-title": "Rapor ve kullanım seçenekleri",
+                "plans-text": "Rapor kapsamına ve aylık analiz ihtiyacına göre farklı kullanım seçenekleri sunulabilir.",
+                "plan-tag-1": "7–10 sayfa",
+                "plan-title-1": "Standart Rapor",
+                "plan-text-1": "Temel EEG metrikleri ve özet değerlendirme içeren daha kompakt rapor yapısı.",
+                "plan-tag-2": "20–25 sayfa",
+                "plan-title-2": "İleri Seviye Rapor",
+                "plan-text-2": "Daha ayrıntılı yorumlama ve genişletilmiş analiz alanları içeren kapsamlı rapor yapısı.",
+                "plan-tag-3": "Aylık plan",
+                "plan-title-3": "Analiz Planları",
+                "plan-text-3": "20 analiz, 50 analiz ve sınırsız analiz gibi farklı aylık kullanım seçenekleri.",
+
+                "contact-label": "İletişim",
+                "contact-title": "İletişim ve geri bildirim",
+                "contact-text": "Sorularınız, önerileriniz ve kullanım talepleriniz için bizimle iletişime geçebilirsiniz.",
+                "contact-card-title-1": "İletişim Bilgileri",
+                "contact-email": "E-posta: info@neurovia.com",
+                "contact-support": "Destek: support@neurovia.com",
+                "contact-location": "Konum: Kayseri, Türkiye",
+                "contact-card-title-2": "Öneri ve Yorum",
+                "feedback-placeholder": "Görüşünüzü veya önerinizi yazın",
+                "feedback-btn": "Gönder",
+                "contact-card-title-3": "Sosyal Medya",
+
+                "footer-brand": "© 2026 Neurovia",
+                "footer-text": "EEG Analiz ve Raporlama Platformu",
+
+                "loading-title": "Veriler analiz ediliyor",
+                "loading-text": "Lütfen bekleyin. EEG veriniz işleniyor ve rapor oluşturuluyor."
+            },
+
+            en: {
+                "page-title": "Neurovia | EEG Analysis Platform",
+                "topbar-text-1": "EEG Analysis Platform",
+                "topbar-text-2": "Professional reporting infrastructure",
+                "nav-analysis": "Analysis",
+                "nav-workflow": "Workflow",
+                "nav-plans": "Plans",
+                "nav-contact": "Contact",
+                "header-action": "Start Analysis",
+
+                "hero-kicker": "Neurovia",
+                "hero-title": "Analyze EEG data, interpret results, and generate structured report outputs.",
+                "hero-text": "Neurovia is designed to support EEG file processing and professional reporting workflows in a more organized, readable, and reliable way.",
+                "hero-button": "Start EEG Analysis",
+
+                "analysis-label": "Analysis",
+                "analysis-title": "EEG file upload area",
+                "analysis-text": "Select one of the supported formats and start the automated analysis workflow.",
+                "upload-label": "Choose EEG File",
+                "file-default": "No file selected",
+                "file-types-text": "Supported formats: .edf, .csv, .mat",
+                "analyzeButton": "Upload and Analyze",
+                "analyzing-button": "Analyzing...",
+
+                "side-label-1": "Workflow",
+                "side-value-1": "File upload → analysis → reporting",
+                "side-label-2": "Output Type",
+                "side-value-2": "Turkish and English PDF EEG report",
+                "side-label-3": "Usage Structure",
+                "side-value-3": "Standard reports and scalable analysis plans",
+
+                "workflow-label": "Workflow",
+                "workflow-title": "How does the platform work?",
+                "workflow-text": "Neurovia takes EEG data through a simple flow, processes it, and converts it into an organized report output.",
+                "workflow-card-1-title": "File upload",
+                "workflow-card-1-text": "You upload your EEG file in EDF, CSV, or MAT format.",
+                "workflow-card-2-title": "Analysis process",
+                "workflow-card-2-text": "The system automatically computes core and advanced metrics.",
+                "workflow-card-3-title": "Report generation",
+                "workflow-card-3-text": "Results are provided as downloadable Turkish and English PDF reports.",
+
+                "plans-label": "Plans",
+                "plans-title": "Reporting and usage options",
+                "plans-text": "Different usage options can be provided depending on report scope and monthly analysis needs.",
+                "plan-tag-1": "7–10 pages",
+                "plan-title-1": "Standard Report",
+                "plan-text-1": "A more compact report structure including core EEG metrics and summary assessment.",
+                "plan-tag-2": "20–25 pages",
+                "plan-title-2": "Advanced Report",
+                "plan-text-2": "A comprehensive report structure with more detailed interpretation and extended analysis areas.",
+                "plan-tag-3": "Monthly plan",
+                "plan-title-3": "Analysis Plans",
+                "plan-text-3": "Different monthly usage options such as 20 analyses, 50 analyses, and unlimited analyses.",
+
+                "contact-label": "Contact",
+                "contact-title": "Contact and feedback",
+                "contact-text": "You can contact us for questions, suggestions, and usage requests.",
+                "contact-card-title-1": "Contact Information",
+                "contact-email": "Email: info@neurovia.com",
+                "contact-support": "Support: support@neurovia.com",
+                "contact-location": "Location: Kayseri, Türkiye",
+                "contact-card-title-2": "Suggestions",
+                "feedback-placeholder": "Write your feedback or suggestion",
+                "feedback-btn": "Send",
+                "contact-card-title-3": "Social Media",
+
+                "footer-brand": "© 2026 Neurovia",
+                "footer-text": "EEG Analysis and Reporting Platform",
+
+                "loading-title": "Analyzing data",
+                "loading-text": "Please wait. Your EEG data is being processed and the report is being generated."
+            }
+        };
+
+        function setLang(lang) {
+            localStorage.setItem("siteLang", lang);
+            document.documentElement.lang = lang;
+            document.title = translations[lang]["page-title"];
+
+            const langInput = document.getElementById("langInput");
+            if (langInput) {
+                langInput.value = lang;
+            }
+
+            for (const key in translations[lang]) {
+                if (["page-title", "file-default", "analyzing-button", "feedback-placeholder"].includes(key)) continue;
+
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[lang][key];
+                }
+            }
+
+            const feedbackBox = document.getElementById("feedback-box");
+            if (feedbackBox) {
+                feedbackBox.placeholder = translations[lang]["feedback-placeholder"];
+            }
+
+            const fileInput = document.getElementById("file");
+            const fileName = document.getElementById("file-name");
+
+            if (fileInput && fileName && fileInput.files.length === 0) {
+                fileName.textContent = translations[lang]["file-default"];
+            }
+
+            document.getElementById("lang-tr").classList.toggle("active", lang === "tr");
+            document.getElementById("lang-en").classList.toggle("active", lang === "en");
+        }
+
+        function updateFileName() {
+            const lang = localStorage.getItem("siteLang") || "tr";
+            const input = document.getElementById("file");
+            const fileName = document.getElementById("file-name");
+
+            if (input.files.length > 0) {
+                fileName.textContent = (lang === "tr" ? "Seçilen dosya: " : "Selected file: ") + input.files[0].name;
+            } else {
+                fileName.textContent = translations[lang]["file-default"];
+            }
+        }
+
+        document.getElementById("uploadForm").addEventListener("submit", function() {
+            const lang = localStorage.getItem("siteLang") || "tr";
+            const button = document.getElementById("analyzeButton");
+            const overlay = document.getElementById("loadingOverlay");
+
+            button.textContent = translations[lang]["analyzing-button"];
+            button.disabled = true;
+
+            overlay.classList.add("show");
+            overlay.setAttribute("aria-hidden", "false");
+        });
+
+        window.addEventListener("DOMContentLoaded", function() {
+            const savedLang = localStorage.getItem("siteLang") || "tr";
+            setLang(savedLang);
+        });
+    </script>
+
+</body>
+</html>

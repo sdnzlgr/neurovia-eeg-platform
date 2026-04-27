@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurovia | EEG Analiz Sonucu</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7fb;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: #0a1f44 !important;
+        }
+
+        .brand-dot {
+            color: #0984e3;
+        }
+
+        .result-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(10, 31, 68, 0.08);
+            background: #ffffff;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #eef6ff, #f8fbff);
+            border-left: 5px solid #0984e3;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .metric-box {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .score-box {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid #edf2f7;
+        }
+
+        .btn-download-tr {
+            background: #0a1f44;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+
+        .btn-download-tr:hover {
+            background: #07162f;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .btn-download-en {
+            background: #0984e3;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+
+        .btn-download-en:hover {
+            background: #0769b5;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .badge-soft {
+            background: #eaf4ff;
+            color: #075a9c;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+
+        .section-label {
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .small-muted {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-light mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            Neurovia<span class="brand-dot">.</span>
+        </a>
+        <span class="small-muted">AI-supported EEG Analysis Platform</span>
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+            <div class="card result-card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <div class="section-label mb-2">Analysis Result</div>
+                        <h2 class="h4 mb-1">EEG Analiz Bulguları</h2>
+                        <p class="small-muted mb-0">Yüklenen EEG verisine ait otomatik analiz özeti</p>
+                    </div>
+
+                    <span class="badge-soft">
+                        Sinyal Kalitesi: {{ signal_quality }}
+                    </span>
+                </div>
+
+                <p class="lead mb-4" style="line-height: 1.8;">
+                    {{ yorum }}
+                </p>
+
+                <div class="summary-box mb-4">
+                    <strong>Baskın Beyin Durumu:</strong>
+                    <span>{{ brain_state }}</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Kanal</div>
+                            <h5 class="mb-0">{{ channel_count }}</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Frekans</div>
+                            <h5 class="mb-0">{{ sampling_rate }} Hz</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Tepe Frekans</div>
+                            <h5 class="mb-0">{{ "%.2f"|format(peak_freq) }} Hz</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">P2P</div>
+                            <h5 class="mb-0">{{ "%.4f"|format(avg_p2p) }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if ratios %}
+            <div class="card result-card p-4">
+                <div class="section-label mb-2">Band Ratios</div>
+                <h5 class="mb-3">Göreceli Bant Dağılımı</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Delta</div>
+                            <h5>{{ "%.2f"|format(ratios.delta * 100) }}%</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Theta</div>
+                            <h5>{{ "%.2f"|format(ratios.theta * 100) }}%</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Alpha</div>
+                            <h5>{{ "%.2f"|format(ratios.alpha * 100) }}%</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <div class="section-label">Beta</div>
+                            <h5>{{ "%.2f"|format(ratios.beta * 100) }}%</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card result-card p-4">
+                <div class="section-label mb-2">Download</div>
+                <h5 class="mb-4">Raporları İndir</h5>
+
+                <div class="score-box mb-3">
+                    <small class="text-muted d-block mb-1">STABİLİTE</small>
+                    <h3 class="mb-0 text-primary">
+                        {{ analysis_scores.stability_score if analysis_scores else '50' }}<small>/100</small>
+                    </h3>
+                </div>
+
+                <div class="score-box mb-3">
+                    <small class="text-muted d-block mb-1">RELAKSASYON</small>
+                    <h3 class="mb-0 text-success">
+                        {{ analysis_scores.relaxation_score if analysis_scores else '47' }}<small>/100</small>
+                    </h3>
+                </div>
+
+                <div class="score-box mb-4">
+                    <small class="text-muted d-block mb-1">UYANIKLIK</small>
+                    <h3 class="mb-0 text-warning">
+                        {{ analysis_scores.alertness_score if analysis_scores else '0' }}<small>/100</small>
+                    </h3>
+                </div>
+
+                <div class="d-grid gap-2">
+                    {% if pdf_name_tr %}
+                    <a href="{{ url_for('download_report', lang='tr', filename=pdf_name_tr) }}" class="btn btn-download-tr">
+                        📄 Türkçe Raporu İndir
+                    </a>
+                    {% endif %}
+
+                    {% if pdf_name_en %}
+                    <a href="{{ url_for('download_report', lang='en', filename=pdf_name_en) }}" class="btn btn-download-en">
+                        🌐 Download English Report
+                    </a>
+                    {% endif %}
+
+                    <hr>
+
+                    <a href="/" class="btn btn-link text-muted">
+                        Yeni Analiz Başlat
+                    </a>
+                </div>
+
+                <p class="small-muted mt-4 mb-0">
+                    Bu rapor araştırma desteği ve analitik değerlendirme amacıyla oluşturulmuştur.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

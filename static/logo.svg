@@ -1,0 +1,17 @@
+<svg width="220" height="60" viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <text x="0" y="38"
+        font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="30"
+        font-weight="600"
+        fill="#0B1220"
+        letter-spacing="-0.5">
+        
+        Neurovia
+
+  </text>
+
+  <!-- Subtle accent line -->
+  <rect x="2" y="46" width="110" height="2" rx="1" fill="#2563EB"/>
+
+</svg>
